@@ -726,7 +726,7 @@ function App() {
     })();
   };
 
-  const handleCalc = () => { if (!isAuth) { setShowPay(true); return; } runCalc(); };
+  const handleCalc = () => { if (!isAuth) { setStep(4); scrollTop(); return; } runCalc(); };
   const handlePaySuccess = (code) => { setAccessCode(code); setIsAuth(true); setShowPay(false); runCalc(); };
   const handleLogin = (code) => { setAccessCode(code); setIsAuth(true); runCalc(); };
   const handleReset = () => { setStep(0); setResults(null); setAiText(""); setIsAuth(false); setAccessCode(""); };
@@ -808,3 +808,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
+
