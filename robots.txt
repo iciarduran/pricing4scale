@@ -1,0 +1,8 @@
+# robots.txt for pricing4scale.com
+# Tells search engine crawlers what they can and cannot access
+
+User-agent: *
+Allow: /
+
+# Point crawlers directly to your sitemap
+Sitemap: https://www.pricing4scale.com/sitemap.xml
