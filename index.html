@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pricing4Scale — The Practical Pricing System for Founders & Operators</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Lato:wght@300;400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────── */
+:root{
+  --ink:     #0d1117;
+  --ink-2:   #1a2130;
+  --ink-3:   #232e42;
+  --amber:   #e8913a;
+  --amber-d: #c97828;
+  --amber-l: #f5bc78;
+  --paper:   #f7f3ec;
+  --paper-2: #ede8df;
+  --paper-3: #e2dbd0;
+  --white:   #ffffff;
+  --muted:   #6b7a8d;
+  --border:  rgba(13,17,23,0.12);
+  --border-l:rgba(13,17,23,0.07);
+}
+
+/* ─── RESET ──────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Lato',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.65;
+  overflow-x:hidden;
+}
+a{text-decoration:none;color:inherit}
+
+/* ─── UTILITY ────────────────────────────────── */
+.container{max-width:1180px;margin:0 auto;padding:0 2.5rem}
+.tag{
+  display:inline-block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--amber-d);
+  padding:.25rem 0;
+  border-bottom:1.5px solid var(--amber-d);
+  margin-bottom:1.2rem;
+}
+.section-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,4.5vw,3.6rem);
+  line-height:1.05;letter-spacing:-.025em;
+  color:var(--ink);
+}
+.section-title em{font-style:italic;color:var(--amber-d)}
+.body-lg{font-size:1.05rem;color:var(--muted);line-height:1.75;font-weight:300}
+
+/* ─── SVG ICON BASE ──────────────────────────── */
+.p-icon{
+  display:block;
+  width:40px;height:40px;
+  margin-bottom:1.5rem;
+  opacity:.85;
+}
+.p-icon-sm{
+  display:inline-block;
+  width:18px;height:18px;
+  vertical-align:middle;
+  flex-shrink:0;
+}
+
+/* ─── NAV ────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(247,243,236,0.92);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  transition:box-shadow .3s;
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 2.5rem;max-width:1180px;margin:0 auto;
+}
+.logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.4rem;font-weight:800;
+  color:var(--ink);letter-spacing:-.03em;
+}
+.logo span{color:var(--amber-d)}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{
+  font-size:.82rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);transition:color .2s;
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{
+  display:inline-block;
+  background:var(--ink);color:var(--paper);
+  border:none;padding:.6rem 1.4rem;
+  font-family:'Lato',sans-serif;
+  font-size:.82rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;border-radius:2px;transition:background .2s;
+}
+.nav-cta:hover{background:var(--ink-3)}
+
+/* ─── HERO ───────────────────────────────────── */
+.hero{
+  padding:11rem 2.5rem 7rem;
+  position:relative;overflow:hidden;
+  background:var(--ink);
+}
+.hero-bg-lines{
+  position:absolute;inset:0;
+  background-image:
+    repeating-linear-gradient(0deg,rgba(232,145,58,.06) 0,rgba(232,145,58,.06) 1px,transparent 1px,transparent 80px),
+    repeating-linear-gradient(90deg,rgba(232,145,58,.06) 0,rgba(232,145,58,.06) 1px,transparent 1px,transparent 80px);
+  pointer-events:none;
+}
+.hero-accent{
+  position:absolute;top:-20%;right:-8%;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,145,58,.15) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-inner{max-width:1180px;margin:0 auto;position:relative}
+.hero-eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:2rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.hero-eyebrow::before{content:'';display:block;width:28px;height:1.5px;background:var(--amber)}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(3rem,7vw,6.5rem);
+  line-height:1.0;letter-spacing:-.04em;
+  color:var(--white);max-width:860px;
+  animation:fadeUp .9s ease both;
+}
+.hero h1 em{font-style:italic;color:var(--amber)}
+.hero-sub{
+  font-size:1.15rem;color:rgba(247,243,236,.65);
+  max-width:560px;margin-top:1.75rem;font-weight:300;line-height:1.75;
+  animation:fadeUp .9s .12s ease both;
+}
+.hero-actions{
+  display:flex;align-items:center;gap:1.25rem;
+  margin-top:2.75rem;flex-wrap:wrap;
+  animation:fadeUp .9s .22s ease both;
+}
+.btn-amber{
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:var(--amber);color:var(--ink);
+  border:none;padding:.9rem 2rem;
+  font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;
+  cursor:pointer;border-radius:2px;
+  transition:background .2s,transform .2s,box-shadow .2s;
+}
+.btn-amber:hover{
+  background:var(--amber-l);transform:translateY(-2px);
+  box-shadow:0 12px 35px rgba(232,145,58,.35);
+}
+.btn-outline-light{
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:transparent;color:rgba(247,243,236,.75);
+  border:1px solid rgba(247,243,236,.25);
+  padding:.9rem 2rem;
+  font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;
+  cursor:pointer;border-radius:2px;transition:border-color .2s,color .2s;
+}
+.btn-outline-light:hover{border-color:rgba(247,243,236,.7);color:var(--white)}
+.hero-note{
+  margin-top:1rem;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.7rem;color:rgba(247,243,236,.35);letter-spacing:.05em;
+  animation:fadeUp .9s .32s ease both;
+}
+
+/* ─── SECTION PADDING ────────────────────────── */
+.sec{padding:8rem 0}
+.sec-alt{background:var(--white)}
+
+/* ─── INTRO BAND ─────────────────────────────── */
+.intro-band{
+  background:var(--paper-2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:4rem 0;
+}
+.intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.intro-item{
+  padding:2rem 3rem;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;gap:.6rem;
+}
+.intro-item:last-child{border-right:none}
+.intro-item-header{display:flex;align-items:center;gap:.85rem}
+.intro-item h3{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;color:var(--ink);
+}
+.intro-item p{font-size:.88rem;color:var(--muted);line-height:1.65}
+
+/* ─── PROBLEM ────────────────────────────────── */
+.problem-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:6rem;align-items:start;
+}
+.problem-cards{display:flex;flex-direction:column;gap:1px;background:var(--border)}
+.pain{
+  background:var(--white);
+  padding:1.75rem 2rem;
+  display:flex;gap:1.25rem;
+  transition:background .2s;
+}
+.pain:hover{background:#fefcf9}
+.pain-ico{
+  flex-shrink:0;
+  width:2.5rem;height:2.5rem;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(201,120,40,.08);
+  border-radius:2px;
+}
+.pain h4{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.3rem}
+.pain p{font-size:.85rem;color:var(--muted);line-height:1.6}
+
+/* ─── PRODUCT LADDER ─────────────────────────── */
+.products{background:var(--ink)}
+.products-intro{text-align:center;max-width:680px;margin:0 auto 5rem}
+.products-intro .section-title{color:var(--white)}
+.products-intro em{color:var(--amber)}
+.products-intro .body-lg{color:rgba(247,243,236,.55)}
+
+.ladder{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
+}
+.product-card{
+  background:var(--ink);
+  padding:2.75rem 2.25rem;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.product-card:hover{background:var(--ink-2)}
+.product-card::after{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:var(--amber);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .4s ease;
+}
+.product-card:hover::after{transform:scaleX(1)}
+.product-badge{
+  display:inline-block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.3rem .7rem;border-radius:2px;
+  margin-bottom:1.75rem;width:fit-content;
+}
+.badge-free{background:rgba(232,145,58,.15);color:var(--amber)}
+.badge-soon{background:rgba(255,255,255,.06);color:rgba(247,243,236,.5)}
+.product-card h3{
+  font-family:'Playfair Display',serif;
+  font-size:1.3rem;color:var(--white);
+  line-height:1.2;margin-bottom:.85rem;
+}
+.product-card p{
+  font-size:.85rem;color:rgba(247,243,236,.5);
+  line-height:1.7;flex:1;margin-bottom:2rem;
+}
+.product-price{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:1.5rem;font-weight:600;color:var(--white);
+  margin-bottom:1.25rem;
+}
+.product-price small{font-size:.72rem;color:rgba(247,243,236,.35);display:block;margin-top:.2rem;font-weight:400}
+.product-price .free-label{color:var(--amber);font-size:1.2rem}
+.product-price .tbd{color:rgba(247,243,236,.3);font-size:.95rem}
+
+.btn-product{
+  display:block;text-align:center;
+  padding:.75rem 1rem;border-radius:2px;
+  font-family:'Lato',sans-serif;
+  font-size:.8rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;border:1px solid;
+}
+.btn-product-amber{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+.btn-product-amber:hover{
+  background:var(--amber-l);border-color:var(--amber-l);
+  box-shadow:0 6px 25px rgba(232,145,58,.35);
+}
+.btn-product-ghost{
+  background:transparent;color:rgba(247,243,236,.3);
+  border-color:rgba(255,255,255,.08);
+  cursor:default;pointer-events:none;
+}
+.btn-product-outline{
+  background:transparent;color:rgba(247,243,236,.7);
+  border-color:rgba(255,255,255,.2);
+}
+.btn-product-outline:hover{border-color:rgba(247,243,236,.6);color:var(--white)}
+
+/* ─── CONSULTING ─────────────────────────────── */
+.consulting-wrap{
+  display:grid;grid-template-columns:3fr 2fr;
+  gap:5rem;align-items:start;
+}
+.consulting-list{
+  list-style:none;display:flex;flex-direction:column;gap:.85rem;
+  margin-top:2rem;
+}
+.consulting-list li{
+  display:flex;align-items:flex-start;gap:.85rem;
+  font-size:.92rem;color:var(--muted);
+}
+.consulting-list li svg{flex-shrink:0;margin-top:.15rem}
+.consulting-card{
+  background:var(--ink);color:var(--paper);
+  border-radius:4px;padding:2.75rem;
+  position:relative;overflow:hidden;
+}
+.consulting-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--amber) 0%,var(--amber-l) 100%);
+}
+.price-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--amber);margin-bottom:.5rem;
+}
+.price-display{
+  font-family:'Playfair Display',serif;
+  font-size:2.8rem;color:var(--white);line-height:1;margin-bottom:.4rem;
+}
+.price-note{font-size:.8rem;color:rgba(247,243,236,.4);margin-bottom:2rem}
+.consulting-perks{
+  list-style:none;display:flex;flex-direction:column;gap:.7rem;margin-top:1.5rem;
+}
+.consulting-perks li{
+  font-size:.83rem;color:rgba(247,243,236,.6);
+  display:flex;align-items:flex-start;gap:.7rem;
+}
+.consulting-perks li svg{flex-shrink:0;margin-top:.15rem}
+.btn-amber-full{
+  width:100%;justify-content:center;
+  display:flex;align-items:center;gap:.6rem;
+  background:var(--amber);color:var(--ink);
+  border:none;padding:.95rem 2rem;
+  font-family:'Lato',sans-serif;font-size:.9rem;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;
+  cursor:pointer;border-radius:2px;margin-top:1.75rem;
+  transition:background .2s,transform .2s,box-shadow .2s;
+}
+.btn-amber-full:hover{
+  background:var(--amber-l);transform:translateY(-2px);
+  box-shadow:0 10px 30px rgba(232,145,58,.35);
+}
+
+/* ─── HOW IT WORKS ───────────────────────────── */
+.how-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  margin-top:4rem;border:1px solid var(--border);
+}
+.how-step{background:var(--white);padding:3rem 2.5rem;position:relative}
+.how-step-num{
+  font-family:'Playfair Display',serif;
+  font-size:4rem;color:rgba(13,17,23,.06);
+  line-height:1;margin-bottom:1.25rem;font-weight:800;
+}
+.how-step h3{font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.5rem}
+.how-step p{font-size:.87rem;color:var(--muted);line-height:1.65}
+
+/* ─── DIAGNOSIS CTA ──────────────────────────── */
+.diagnosis{
+  background:linear-gradient(135deg,var(--ink-2) 0%,var(--ink) 100%);
+  padding:8rem 0;position:relative;overflow:hidden;
+}
+.diagnosis::before{
+  content:'DIAGNOSE';
+  position:absolute;right:-2%;top:50%;transform:translateY(-50%);
+  font-family:'Playfair Display',serif;
+  font-size:18vw;font-weight:800;font-style:italic;
+  color:rgba(255,255,255,.025);line-height:1;
+  pointer-events:none;white-space:nowrap;
+}
+.diagnosis-inner{
+  position:relative;max-width:760px;margin:0 auto;text-align:center;
+  padding:0 2.5rem;
+}
+.diagnosis-inner .tag{color:var(--amber);border-color:var(--amber)}
+.diagnosis-inner h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.2rem,5vw,4rem);
+  color:var(--white);line-height:1.05;letter-spacing:-.025em;margin-bottom:1.25rem;
+}
+.diagnosis-inner h2 em{font-style:italic;color:var(--amber)}
+.diagnosis-inner p{
+  font-size:1rem;color:rgba(247,243,236,.55);
+  line-height:1.75;max-width:520px;margin:0 auto 2.5rem;
+}
+.diagnosis-btn-wrap{display:flex;justify-content:center;gap:1.25rem;flex-wrap:wrap}
+.btn-big-amber{
+  display:inline-flex;align-items:center;gap:.7rem;
+  background:var(--amber);color:var(--ink);
+  border:none;padding:1.1rem 2.5rem;
+  font-family:'Lato',sans-serif;font-size:.95rem;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;
+  cursor:pointer;border-radius:2px;
+  transition:background .2s,transform .2s,box-shadow .2s;
+}
+.btn-big-amber:hover{
+  background:var(--amber-l);transform:translateY(-2px);
+  box-shadow:0 14px 40px rgba(232,145,58,.4);
+}
+.diagnosis-detail{
+  margin-top:2rem;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:.68rem;letter-spacing:.08em;color:rgba(247,243,236,.3);
+}
+
+/* ─── TESTIMONIALS ───────────────────────────── */
+.testimonials-note{
+  background:var(--paper-2);
+  border:1px solid var(--border);border-radius:4px;
+  padding:3.5rem;text-align:center;
+  max-width:680px;margin:4rem auto 0;
+}
+.t-icon-wrap{
+  width:52px;height:52px;
+  background:rgba(201,120,40,.1);border-radius:2px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1.5rem;
+}
+.testimonials-note h3{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;color:var(--ink);margin-bottom:.75rem;
+}
+.testimonials-note p{font-size:.9rem;color:var(--muted);line-height:1.7;max-width:460px;margin:0 auto 1.5rem}
+.cta-link{
+  font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--amber-d);border-bottom:1.5px solid var(--amber-d);padding-bottom:.1rem;
+  display:inline-flex;align-items:center;gap:.4rem;
+}
+
+/* ─── FAQ ────────────────────────────────────── */
+.faq-cols{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--border);
+  max-width:1050px;margin:4rem auto 0;
+  border:1px solid var(--border);
+}
+.faq-item{
+  background:var(--white);padding:2rem 2.25rem;
+  cursor:pointer;transition:background .2s;
+}
+.faq-item:hover{background:#fefcf9}
+.faq-q{
+  font-size:.93rem;font-weight:700;color:var(--ink);
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+}
+.faq-q .ico{
+  font-size:1.1rem;color:var(--amber-d);flex-shrink:0;
+  font-family:'IBM Plex Mono',monospace;font-weight:600;min-width:1rem;text-align:center;
+}
+.faq-a{font-size:.87rem;color:var(--muted);line-height:1.7;margin-top:.85rem;display:none}
+
+/* ─── FOOTER ─────────────────────────────────── */
+footer{background:#0a0f17;padding:5rem 0 3rem}
+.footer-grid{
+  display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr;
+  gap:4rem;padding-bottom:3rem;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.footer-logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;font-weight:800;color:var(--white);
+  letter-spacing:-.03em;margin-bottom:.75rem;
+}
+.footer-logo span{color:var(--amber)}
+.footer-tagline{font-size:.87rem;color:rgba(247,243,236,.35);line-height:1.7;max-width:280px;margin-top:.5rem}
+.footer-col h4{
+  font-size:.72rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(247,243,236,.4);margin-bottom:1.25rem;
+}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.65rem}
+.footer-col a{font-size:.87rem;color:rgba(247,243,236,.35);transition:color .2s}
+.footer-col a:hover{color:rgba(247,243,236,.8)}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:2.5rem;
+  font-size:.75rem;color:rgba(247,243,236,.2);
+  font-family:'IBM Plex Mono',monospace;
+}
+
+/* ─── ANIMATIONS ─────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.fade{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s ease}
+.fade.vis{opacity:1;transform:translateY(0)}
+
+/* ─── RESPONSIVE ─────────────────────────────── */
+@media(max-width:1100px){
+  .ladder{grid-template-columns:1fr 1fr}
+  .consulting-wrap{grid-template-columns:1fr;gap:3rem}
+}
+@media(max-width:768px){
+  .nav-inner{padding:1rem 1.25rem}
+  .nav-links{display:none}
+  .hero{padding:9rem 1.25rem 5rem}
+  .container{padding:0 1.25rem}
+  .sec{padding:5.5rem 0}
+  .intro-grid{grid-template-columns:1fr}
+  .intro-item{border-right:none;border-bottom:1px solid var(--border);padding:1.75rem 1.5rem}
+  .intro-item:last-child{border-bottom:none}
+  .problem-layout{grid-template-columns:1fr;gap:3rem}
+  .ladder{grid-template-columns:1fr}
+  .how-grid{grid-template-columns:1fr}
+  .faq-cols{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2.5rem}
+  .footer-bottom{flex-direction:column;gap:.75rem;text-align:center}
+  .hero-actions{flex-direction:column;align-items:flex-start}
+  .diagnosis-btn-wrap{flex-direction:column;align-items:center}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SVG SPRITE (inline, hidden) ════════════ -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <!-- magnifier / diagnosis -->
+  <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+  </symbol>
+  <!-- calculator / market entry -->
+  <symbol id="icon-calculator" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4" y="2" width="16" height="20" rx="2"/>
+    <line x1="8" y1="7" x2="16" y2="7"/>
+    <line x1="8" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="16" y2="12"/>
+    <line x1="8" y1="16" x2="10" y2="16"/><line x1="14" y1="16" x2="16" y2="16"/>
+  </symbol>
+  <!-- engine / gear -->
+  <symbol id="icon-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </symbol>
+  <!-- book / playbook -->
+  <symbol id="icon-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    <line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="13" y2="11"/>
+  </symbol>
+  <!-- arrow right -->
+  <symbol id="icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+  </symbol>
+  <!-- checkmark -->
+  <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </symbol>
+  <!-- target / value -->
+  <symbol id="icon-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+  </symbol>
+  <!-- box / packaging -->
+  <symbol id="icon-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/>
+    <line x1="10" y1="12" x2="14" y2="12"/>
+  </symbol>
+  <!-- door / no path -->
+  <symbol id="icon-trending" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+  </symbol>
+  <!-- refresh / reactive -->
+  <symbol id="icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="1 4 1 10 7 10"/>
+    <path d="M3.51 15a9 9 0 1 0 .49-3"/>
+  </symbol>
+  <!-- grid for "any business" -->
+  <symbol id="icon-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+  </symbol>
+  <!-- tool wrench -->
+  <symbol id="icon-tool" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+  </symbol>
+  <!-- brain / practical -->
+  <symbol id="icon-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+  </symbol>
+  <!-- mail -->
+  <symbol id="icon-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+    <polyline points="22,6 12,13 2,6"/>
+  </symbol>
+  <!-- chat bubble -->
+  <symbol id="icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </symbol>
+</svg>
+
+<!-- ═══ NAV ════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">Pricing<span>4</span>Scale</div>
+    <ul class="nav-links">
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#consulting">Consulting</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdL4cOTmYuv6P3BP_vN7k8soWbtBrnD0TqP_gqelgAWMmWXhQ/viewform" target="_blank" class="nav-cta">Free Diagnosis →</a>
+  </div>
+</nav>
+
+<!-- ═══ HERO ════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg-lines"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">A Practical Pricing System</div>
+    <h1>Enter Markets.<br/><em>Set Prices.</em><br/>Capture Value.</h1>
+    <p class="hero-sub">
+      Pricing4Scale gives founders and operators the tools, frameworks, and expert support to price with confidence — whether you're launching a clothing line, a B2B service, or anything in between.
+    </p>
+    <div class="hero-actions">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdL4cOTmYuv6P3BP_vN7k8soWbtBrnD0TqP_gqelgAWMmWXhQ/viewform" target="_blank" class="btn-amber">
+        Start Your Free Diagnosis
+        <svg class="p-icon-sm" style="color:var(--ink)"><use href="#icon-arrow"/></svg>
+      </a>
+      <a href="#tools" class="btn-outline-light">Explore the Tools</a>
+    </div>
+    <p class="hero-note">// No credit card · Takes &lt; 10 minutes · Get instant clarity on your pricing</p>
+  </div>
+</section>
+
+<!-- ═══ INTRO BAND ═══════════════════════════════ -->
+<div class="intro-band">
+  <div class="container">
+    <div class="intro-grid">
+      <div class="intro-item">
+        <div class="intro-item-header">
+          <svg width="20" height="20" style="color:var(--amber-d);flex-shrink:0"><use href="#icon-grid"/></svg>
+          <h3>For any business type</h3>
+        </div>
+        <p>From fashion brands to consulting practices to digital products — if you have something to sell, pricing is your #1 lever. We built the system for all of them.</p>
+      </div>
+      <div class="intro-item">
+        <div class="intro-item-header">
+          <svg width="20" height="20" style="color:var(--amber-d);flex-shrink:0"><use href="#icon-tool"/></svg>
+          <h3>Tools, not just advice</h3>
+        </div>
+        <p>We don't hand you a strategy doc and leave. You get structured tools, calculators, and playbooks you can run yourself — or with our expert support.</p>
+      </div>
+      <div class="intro-item">
+        <div class="intro-item-header">
+          <svg width="20" height="20" style="color:var(--amber-d);flex-shrink:0"><use href="#icon-zap"/></svg>
+          <h3>Practical, not academic</h3>
+        </div>
+        <p>Every framework in Pricing4Scale comes from real market experience. No theory for its own sake — only what moves your numbers.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROBLEM ══════════════════════════════════ -->
+<section class="sec">
+  <div class="container">
+    <div class="problem-layout">
+      <div>
+        <div class="tag">// The Problem</div>
+        <h2 class="section-title">Most Businesses<br/>Price by <em>Instinct.</em><br/>That's Expensive.</h2>
+        <p class="body-lg" style="margin-top:1.25rem">
+          Pricing decisions are often made once — at launch — then forgotten. The result: revenue that doesn't match your value, customers who don't understand what they're paying for, and growth that plateaus.
+        </p>
+        <p class="body-lg" style="margin-top:1rem">
+          Pricing4Scale gives you a systematic way out: a diagnosis that exposes the real problem, tools that quantify the answer, and a playbook to execute it.
+        </p>
+      </div>
+      <div class="problem-cards fade">
+        <div class="pain">
+          <div class="pain-ico">
+            <svg width="20" height="20" style="color:var(--amber-d)"><use href="#icon-target"/></svg>
+          </div>
+          <div>
+            <h4>You're pricing from cost, not value</h4>
+            <p>Margins tell you your floor — not what the market will actually pay. Leaving that gap unexplored is the most common revenue leak we see.</p>
+          </div>
+        </div>
+        <div class="pain">
+          <div class="pain-ico">
+            <svg width="20" height="20" style="color:var(--amber-d)"><use href="#icon-box"/></svg>
+          </div>
+          <div>
+            <h4>Your packaging doesn't guide the buyer</h4>
+            <p>If customers can't quickly see which option is theirs, they hesitate. Hesitation kills conversion — in e-commerce, services, and B2B alike.</p>
+          </div>
+        </div>
+        <div class="pain">
+          <div class="pain-ico">
+            <svg width="20" height="20" style="color:var(--amber-d)"><use href="#icon-trending"/></svg>
+          </div>
+          <div>
+            <h4>No clear path to higher-value customers</h4>
+            <p>Without deliberate tier design, you serve whoever shows up. With it, you attract the segment willing to pay most — and retain them longest.</p>
+          </div>
+        </div>
+        <div class="pain">
+          <div class="pain-ico">
+            <svg width="20" height="20" style="color:var(--amber-d)"><use href="#icon-refresh"/></svg>
+          </div>
+          <div>
+            <h4>Market entry is a guessing game</h4>
+            <p>Setting prices for a new market, product line, or geography without data and structure leads to either money left on the table or deals lost to price.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRODUCT LADDER ══════════════════════════ -->
+<section class="sec products" id="tools">
+  <div class="container">
+    <div class="products-intro fade">
+      <div class="tag" style="color:var(--amber);border-color:var(--amber)">// The Toolkit</div>
+      <h2 class="section-title" style="color:var(--white)">Everything You Need to<br/><em>Price with Confidence</em></h2>
+      <p class="body-lg" style="margin-top:1rem">
+        Start free. Upgrade when you're ready. Each tool is designed to work standalone or as part of a complete system.
+      </p>
+    </div>
+    <div class="ladder">
+
+      <!-- TOOL 1 -->
+      <div class="product-card fade">
+        <div class="product-badge badge-free">Free · Start Here</div>
+        <svg class="p-icon" style="color:var(--amber)"><use href="#icon-search"/></svg>
+        <h3>Pricing Diagnosis</h3>
+        <p>A structured questionnaire that maps your current pricing model, surfaces the biggest leaks, and gives you a prioritized list of improvements — in under 10 minutes.</p>
+        <div class="product-price">
+          <span class="free-label">Free</span>
+          <small>Google Form · Instant results</small>
+        </div>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdL4cOTmYuv6P3BP_vN7k8soWbtBrnD0TqP_gqelgAWMmWXhQ/viewform" target="_blank" class="btn-product btn-product-amber">
+          Take the Diagnosis →
+        </a>
+      </div>
+
+      <!-- TOOL 2 -->
+      <div class="product-card fade">
+        <div class="product-badge badge-soon">Coming Soon</div>
+        <svg class="p-icon" style="color:rgba(247,243,236,.25)"><use href="#icon-calculator"/></svg>
+        <h3>Market Entry Calculator</h3>
+        <p>Input your target market, cost structure, and competitive landscape — get a data-driven price range, positioning recommendation, and launch strategy.</p>
+        <div class="product-price">
+          <span class="tbd">Pricing TBD</span>
+          <small>One-time purchase · Self-serve tool</small>
+        </div>
+        <button class="btn-product btn-product-ghost">Join Waitlist</button>
+      </div>
+
+      <!-- TOOL 3 -->
+      <div class="product-card fade">
+        <div class="product-badge badge-soon">Coming Soon</div>
+        <svg class="p-icon" style="color:rgba(247,243,236,.25)"><use href="#icon-gear"/></svg>
+        <h3>Value-Based Pricing Engine</h3>
+        <p>Stop pricing from cost. This engine walks you through quantifying customer value, willingness-to-pay estimation, and setting price points that capture it.</p>
+        <div class="product-price">
+          <span class="tbd">Pricing TBD</span>
+          <small>One-time purchase · Self-serve tool</small>
+        </div>
+        <button class="btn-product btn-product-ghost">Join Waitlist</button>
+      </div>
+
+      <!-- TOOL 4 -->
+      <div class="product-card fade">
+        <div class="product-badge badge-soon">Coming Soon</div>
+        <svg class="p-icon" style="color:rgba(247,243,236,.25)"><use href="#icon-book"/></svg>
+        <h3>The Pricing Playbook</h3>
+        <p>The complete Pricing4Scale methodology in one practical guide: tier design, packaging, pricing page structure, objection handling, and how to raise prices without losing customers.</p>
+        <div class="product-price">
+          <span class="tbd">Pricing TBD</span>
+          <small>Digital guide · Industry-agnostic</small>
+        </div>
+        <button class="btn-product btn-product-ghost">Join Waitlist</button>
+      </div>
+
+    </div>
+
+    <!-- Waitlist -->
+    <div style="text-align:center;margin-top:2.75rem">
+      <p style="font-size:.72rem;color:rgba(247,243,236,.3);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;margin-bottom:1.25rem">
+        // Tools in development — leave your email to be first when they launch
+      </p>
+      <div style="display:flex;justify-content:center;max-width:420px;margin:0 auto">
+        <input type="email" placeholder="your@email.com" style="flex:1;padding:.82rem 1.25rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-right:none;color:var(--white);font-family:'Lato',sans-serif;font-size:.88rem;border-radius:2px 0 0 2px;outline:none" />
+        <button style="background:var(--amber);color:var(--ink);border:none;padding:.82rem 1.5rem;font-family:'Lato',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border-radius:0 2px 2px 0;white-space:nowrap;transition:background .2s" onmouseover="this.style.background='#f5bc78'" onmouseout="this.style.background='#e8913a'">
+          Notify Me
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ════════════════════════════ -->
+<section class="sec sec-alt" id="how">
+  <div class="container">
+    <div class="tag">// The System</div>
+    <h2 class="section-title">How Pricing4Scale Works</h2>
+    <p class="body-lg" style="max-width:540px;margin-top:1rem">
+      A three-stage system that moves you from pricing confusion to market-ready confidence — at your own pace, with or without expert help.
+    </p>
+    <div class="how-grid">
+      <div class="how-step fade">
+        <div class="how-step-num">01</div>
+        <svg width="28" height="28" style="color:var(--amber-d);margin-bottom:1rem"><use href="#icon-search"/></svg>
+        <h3>Diagnose</h3>
+        <p>Use the free Pricing Diagnosis to understand exactly where your pricing stands today — what's working, what's leaking, and where the biggest opportunity is hiding.</p>
+      </div>
+      <div class="how-step fade">
+        <div class="how-step-num">02</div>
+        <svg width="28" height="28" style="color:var(--amber-d);margin-bottom:1rem"><use href="#icon-tool"/></svg>
+        <h3>Build</h3>
+        <p>Apply the right tool for your challenge: calculate your market entry price, quantify your value, design your tiers, or follow the full Playbook from end to end.</p>
+      </div>
+      <div class="how-step fade">
+        <div class="how-step-num">03</div>
+        <svg width="28" height="28" style="color:var(--amber-d);margin-bottom:1rem"><use href="#icon-zap"/></svg>
+        <h3>Execute (with support if needed)</h3>
+        <p>Implement the new model yourself — or bring in our consulting team for hands-on support with design, rollout, customer communication, and optimization.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONSULTING ══════════════════════════════ -->
+<section class="sec" id="consulting">
+  <div class="container">
+    <div class="consulting-wrap">
+      <div>
+        <div class="tag">// Expert Support</div>
+        <h2 class="section-title">Need Help<br/>Doing It <em>Right?</em></h2>
+        <p class="body-lg" style="margin-top:1.25rem">
+          The tools are built to be self-serve. But if you're navigating a market entry, a pricing overhaul, or a price increase — our consulting engagement puts a senior pricing expert in your corner.
+        </p>
+        <p class="body-lg" style="margin-top:1rem">
+          This isn't a strategy deck. It's hands-on work: model design, packaging, pricing page, sales playbook, and rollout — delivered in 4–6 weeks.
+        </p>
+        <ul class="consulting-list">
+          <li>
+            <svg width="15" height="15" style="color:var(--amber-d);margin-top:.1rem;flex-shrink:0"><use href="#icon-check"/></svg>
+            Full pricing architecture review &amp; redesign
+          </li>
+          <li>
+            <svg width="15" height="15" style="color:var(--amber-d);margin-top:.1rem;flex-shrink:0"><use href="#icon-check"/></svg>
+            Tier &amp; packaging strategy for your specific market
+          </li>
+          <li>
+            <svg width="15" height="15" style="color:var(--amber-d);margin-top:.1rem;flex-shrink:0"><use href="#icon-check"/></svg>
+            Pricing page copy and structure
+          </li>
+          <li>
+            <svg width="15" height="15" style="color:var(--amber-d);margin-top:.1rem;flex-shrink:0"><use href="#icon-check"/></svg>
+            Sales &amp; objection handling playbook
+          </li>
+          <li>
+            <svg width="15" height="15" style="color:var(--amber-d);margin-top:.1rem;flex-shrink:0"><use href="#icon-check"/></svg>
+            Price change rollout plan &amp; customer communication
+          </li>
+          <li>
+            <svg width="15" height="15" style="color:var(--amber-d);margin-top:.1rem;flex-shrink:0"><use href="#icon-check"/></svg>
+            30-day post-launch support included
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div class="consulting-card fade">
+          <div class="price-label">Consulting Engagement</div>
+          <div class="price-display">Custom</div>
+          <div class="price-note">Scoped to your business · Starts with a free email consultation</div>
+          <ul class="consulting-perks">
+            <li>
+              <svg width="13" height="13" style="color:var(--amber)"><use href="#icon-check"/></svg>
+              Senior strategist (not a junior analyst)
+            </li>
+            <li>
+              <svg width="13" height="13" style="color:var(--amber)"><use href="#icon-check"/></svg>
+              Works across any industry or business model
+            </li>
+            <li>
+              <svg width="13" height="13" style="color:var(--amber)"><use href="#icon-check"/></svg>
+              Deliverables, not slides
+            </li>
+            <li>
+              <svg width="13" height="13" style="color:var(--amber)"><use href="#icon-check"/></svg>
+              4–6 week delivery
+            </li>
+          </ul>
+          <a href="mailto:pricing4scale@gmail.com?subject=Consulting%20Enquiry%20%E2%80%94%20Pricing4Scale&body=Hi%2C%0A%0AI%27d%20like%20to%20learn%20more%20about%20a%20consulting%20engagement.%0A%0ABusiness%20type%3A%20%0ACurrent%20pricing%20challenge%3A%20%0A" class="btn-amber-full">
+            <svg width="16" height="16"><use href="#icon-mail"/></svg>
+            Get in Touch by Email
+          </a>
+        </div>
+        <p style="font-size:.73rem;color:var(--muted);text-align:center;margin-top:1rem;font-family:'IBM Plex Mono',monospace;letter-spacing:.03em">
+          // Start with the free diagnosis first — it makes the conversation far more productive.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DIAGNOSIS CTA ════════════════════════════ -->
+<section class="diagnosis">
+  <div class="diagnosis-inner">
+    <div class="tag">// Start Here · It's Free</div>
+    <h2>Diagnose Your Pricing<br/>in <em>10 Minutes.</em></h2>
+    <p>
+      The Pricing Diagnosis is a structured questionnaire that maps your pricing model, identifies your biggest gaps, and tells you exactly what to fix first — at no cost, with no sales pitch.
+    </p>
+    <div class="diagnosis-btn-wrap">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdL4cOTmYuv6P3BP_vN7k8soWbtBrnD0TqP_gqelgAWMmWXhQ/viewform" target="_blank" class="btn-big-amber">
+        Take the Free Diagnosis
+        <svg width="16" height="16"><use href="#icon-arrow"/></svg>
+      </a>
+    </div>
+    <p class="diagnosis-detail">// Free · No account needed · Works for any business type</p>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ══════════════════════════════ -->
+<section class="sec sec-alt">
+  <div class="container">
+    <div style="text-align:center;max-width:600px;margin:0 auto">
+      <div class="tag">// What Clients Say</div>
+      <h2 class="section-title">Results From the Field</h2>
+    </div>
+    <div class="testimonials-note fade">
+      <div class="t-icon-wrap">
+        <svg width="24" height="24" style="color:var(--amber-d)"><use href="#icon-chat"/></svg>
+      </div>
+      <h3>We're collecting our first case studies</h3>
+      <p>
+        We're in early access. If you've used the Pricing Diagnosis or worked with us and want to share your results, we'd love to feature your story here — with full credit and your real numbers.
+      </p>
+      <a href="mailto:pricing4scale@gmail.com?subject=I%20want%20to%20share%20my%20Pricing4Scale%20story" class="cta-link">
+        Share Your Story
+        <svg width="13" height="13"><use href="#icon-arrow"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ════════════════════════════════════ -->
+<section class="sec" id="faq">
+  <div class="container">
+    <div style="text-align:center;max-width:580px;margin:0 auto">
+      <div class="tag">// Questions</div>
+      <h2 class="section-title">Honest Answers</h2>
+    </div>
+    <div class="faq-cols">
+      <div class="faq-item fade">
+        <div class="faq-q">Is this only for tech or SaaS companies?<span class="ico">+</span></div>
+        <div class="faq-a">Not at all. Pricing4Scale was built to work across industries — product businesses, service firms, e-commerce, manufacturing, professional services. The principles of value capture apply everywhere price is involved.</div>
+      </div>
+      <div class="faq-item fade">
+        <div class="faq-q">What does the free diagnosis actually give me?<span class="ico">+</span></div>
+        <div class="faq-a">You'll fill out a structured Google Form covering how you currently price, what your customers look like, and how deals typically close. Based on your answers, you'll get a summary of your pricing model's strengths, weaknesses, and the #1 thing to fix first.</div>
+      </div>
+      <div class="faq-item fade">
+        <div class="faq-q">When will the paid tools be available?<span class="ico">+</span></div>
+        <div class="faq-a">We're building them now. Join the waitlist on this page and you'll be the first to know — plus early access pricing. The Market Entry Calculator is the next in the pipeline.</div>
+      </div>
+      <div class="faq-item fade">
+        <div class="faq-q">How does consulting work?<span class="ico">+</span></div>
+        <div class="faq-a">Send us an email at pricing4scale@gmail.com describing your business and pricing challenge. We'll reply with a few questions, then scope a proposal tailored to what you actually need — no generic packages, no pressure.</div>
+      </div>
+      <div class="faq-item fade">
+        <div class="faq-q">Can I use the tools without hiring a consultant?<span class="ico">+</span></div>
+        <div class="faq-a">Absolutely — that's the point. The tools are designed to be self-serve for founders and operators who want to move fast without a consultant. Consulting is an option, not a requirement.</div>
+      </div>
+      <div class="faq-item fade">
+        <div class="faq-q">What if I just launched and have no pricing data yet?<span class="ico">+</span></div>
+        <div class="faq-a">The Diagnosis and Market Entry Calculator are specifically useful at this stage — they help you set an informed launch price rather than guessing. Pre-revenue is actually the best time to get pricing right.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Pricing<span>4</span>Scale</div>
+        <p class="footer-tagline">
+          A practical pricing system for founders and operators entering markets, setting prices, and capturing value — with confidence.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>Tools</h4>
+        <ul>
+          <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSdL4cOTmYuv6P3BP_vN7k8soWbtBrnD0TqP_gqelgAWMmWXhQ/viewform" target="_blank">Free Diagnosis →</a></li>
+          <li><a href="#tools">Market Entry Calculator</a></li>
+          <li><a href="#tools">Value-Based Engine</a></li>
+          <li><a href="#tools">The Pricing Playbook</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#how">How It Works</a></li>
+          <li><a href="#consulting">Consulting</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="mailto:pricing4scale@gmail.com">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Stay Updated</h4>
+        <ul>
+          <li><a href="mailto:pricing4scale@gmail.com?subject=Tool%20Launch%20Updates">Tool Launch Updates</a></li>
+          <li><a href="mailto:pricing4scale@gmail.com?subject=I%20want%20to%20share%20my%20story">Share a Case Study</a></li>
+          <li><a href="mailto:pricing4scale@gmail.com">pricing4scale@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Pricing4Scale. All rights reserved.</span>
+      <span>// Built for founders who price with intention.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ JS ════════════════════════════════════ -->
+<script>
+// Scroll animations
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const siblings = Array.from(e.target.parentElement?.querySelectorAll('.fade') || []);
+      const i = siblings.indexOf(e.target);
+      setTimeout(() => e.target.classList.add('vis'), i * 90);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade').forEach(el => obs.observe(el));
+
+// FAQ accordion
+document.querySelectorAll('.faq-item').forEach(item => {
+  const a = item.querySelector('.faq-a');
+  const ico = item.querySelector('.ico');
+  item.addEventListener('click', () => {
+    const open = a.style.display === 'block';
+    document.querySelectorAll('.faq-a').forEach(x => x.style.display = 'none');
+    document.querySelectorAll('.faq-item .ico').forEach(x => x.textContent = '+');
+    if (!open) { a.style.display = 'block'; ico.textContent = '−'; }
+  });
+});
+
+// Nav shadow on scroll
+window.addEventListener('scroll', () => {
+  document.querySelector('nav').style.boxShadow =
+    window.scrollY > 40 ? '0 2px 20px rgba(13,17,23,0.1)' : 'none';
+});
+</script>
+</body>
+</html>
