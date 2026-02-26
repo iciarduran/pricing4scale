@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Market Entry Calculator — Pricing4Scale</title>
-<meta name="description" content="Calculate your optimal market entry price with data-driven analysis, AI-powered interpretation, and go-to-market strategy."/>
+<meta name="description" content="Calculate your optimal market entry price with data-driven analysis and go-to-market strategy."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Lato:wght@300;400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 
@@ -450,7 +450,7 @@ function S4({ d, set }) {
 }
 
 // ─── Results Component ────────────────────────────────────────
-function Results({ r, d, aiText, aiLoad }) {
+function Results({ r, d }) {
   const fmt = n => n >= 1e6 ? "$"+(n/1e6).toFixed(1)+"M" : n >= 1e3 ? "$"+(n/1e3).toFixed(1)+"K" : "$"+n.toFixed(2);
   return (
     <div style={{ paddingTop: "1rem" }}>
@@ -491,18 +491,6 @@ function Results({ r, d, aiText, aiLoad }) {
           <div className="strat-card"><h4>Competitive Response</h4><p>{r.priceVsCompetitive > 1.2 ? "Above midpoint — justify premium with ROI proof." : r.priceVsCompetitive > 0.9 ? "Sweet spot — compete on experience, not price." : "Below midpoint — set timeline for increases."}</p></div>
           <div className="strat-card"><h4>Price Evolution</h4><p>{+d.maturity <= 1 ? "First increase at 6 months. Grandfather early customers." : "Review quarterly. Small frequent increases beat large infrequent ones."}</p></div>
         </div>
-      </div>
-
-      <div className="ai-box">
-        <div className="ai-badge">◆ AI Strategy Interpretation</div>
-        <h3>Personalized Analysis</h3>
-        {aiLoad ? (
-          <div className="ai-dots"><div className="dots"><span /><span /><span /></div><span>Generating analysis…</span></div>
-        ) : aiText ? (
-          <div className="ai-body" dangerouslySetInnerHTML={{ __html: aiText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br/>") }} />
-        ) : (
-          <p style={{ color: "rgba(247,243,236,0.35)", fontSize: "0.85rem" }}>AI interpretation loading…</p>
-        )}
       </div>
 
       <div className="cta-banner">
@@ -560,7 +548,6 @@ function PaymentModal({ onClose, onSuccess }) {
           <div className="modal-period">One-time · No subscription · No renewal</div>
           <ul className="feat-list">
             <li><span className="ck">✓</span> Full pricing recommendation (floor → optimal → ceiling)</li>
-            <li><span className="ck">✓</span> AI-powered strategic interpretation</li>
             <li><span className="ck">✓</span> Go-to-market pricing playbook</li>
             <li><span className="ck">✓</span> Positioning score & risk assessment</li>
             <li><span className="ck">✓</span> Revenue projections at target volume</li>
@@ -633,7 +620,7 @@ function LockedGate({ onPurchase, onLogin }) {
           </svg>
         </div>
         <h3>Your Analysis Is Ready</h3>
-        <p>Complete your $49 one-time purchase to unlock your full pricing recommendation, AI interpretation, and go-to-market strategy.</p>
+        <p>Complete your $49 one-time purchase to unlock your full pricing recommendation and go-to-market strategy.</p>
         <div className="preview-blur">
           <div className="preview-row">
             <div className="preview-item"><div className="preview-label">Price Floor</div><div className="preview-val">$●●●</div></div>
@@ -678,8 +665,6 @@ function App() {
   const [showPay, setShowPay] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
   const [accessCode, setAccessCode] = useState("");
-  const [aiText, setAiText] = useState("");
-  const [aiLoad, setAiLoad] = useState(false);
   const topRef = useRef(null);
 
   const scrollTop = () => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -703,33 +688,12 @@ function App() {
     setResults(r);
     setStep(4);
     scrollTop();
-    // AI interpretation
-    (async () => {
-      setAiLoad(true);
-      try {
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514", max_tokens: 1000,
-            messages: [{ role: "user",
-              content: "You are a senior pricing strategist (20+ years). Interpret this market entry analysis.\n\nCLIENT: "+d.industry+" | "+d.geography+" | "+(MATURITY[+d.maturity]||"Unknown")+" | "+d.channel+"\nProduct: "+(d.description||"N/A")+" | Value: "+(d.valueProp||"N/A")+"\nCost: $"+d.unitCost+"/unit, $"+d.fixedCostsMonthly+"/mo fixed | Vol: "+d.targetVolume+"/mo\nCompetitors: $"+d.competitorLow+"-$"+d.competitorHigh+" | Diff: "+d.differentiationScore+"/10 | Brand: "+d.brandStrength+"/10\n\nRESULTS: Optimal $"+r.optimalPrice+" | Floor $"+r.priceFloor+" | Ceiling $"+r.priceCeiling+" | Margin "+r.marginAtOptimal+"% | Position "+r.positioningScore+"/100 | Risk "+r.riskLevel+"\n\nGive: 1) 2-sentence summary 2) Biggest risk + fix 3) Non-obvious insight 4) First action this week. Use **bold**. Be specific."
-            }],
-          }),
-        });
-        const data = await res.json();
-        setAiText(data.content?.map(c => c.text || "").join("\n") || "Results valid. Contact pricing4scale@gmail.com for interpretation.");
-      } catch {
-        setAiText("**AI unavailable.** Results above are still actionable. Email pricing4scale@gmail.com for interpretation.");
-      }
-      setAiLoad(false);
-    })();
   };
 
   const handleCalc = () => { if (!isAuth) { setStep(4); scrollTop(); return; } runCalc(); };
   const handlePaySuccess = (code) => { setAccessCode(code); setIsAuth(true); setShowPay(false); runCalc(); };
   const handleLogin = (code) => { setAccessCode(code); setIsAuth(true); runCalc(); };
-  const handleReset = () => { setStep(0); setResults(null); setAiText(""); setIsAuth(false); setAccessCode(""); };
+  const handleReset = () => { setStep(0); setResults(null); setIsAuth(false); setAccessCode(""); };
 
   return (
     <React.Fragment>
@@ -751,7 +715,7 @@ function App() {
             <div className="calc-hero-inner">
               <div className="tag">// Market Entry Pricing Tool</div>
               <h1>Calculate Your<br /><em>Optimal Entry Price</em></h1>
-              <p>Input your market data, cost structure, and competitive landscape — get a data-driven price range, positioning score, and AI-powered interpretation.</p>
+              <p>Input your market data, cost structure, and competitive landscape — get a data-driven price range, positioning score, and go-to-market strategy.</p>
             </div>
           </div>
         )}
@@ -773,7 +737,7 @@ function App() {
           {step === 1 && <S2 d={d} set={setD} />}
           {step === 2 && <S3 d={d} set={setD} />}
           {step === 3 && <S4 d={d} set={setD} />}
-          {step === 4 && isAuth && results && <Results r={results} d={d} aiText={aiText} aiLoad={aiLoad} />}
+          {step === 4 && isAuth && results && <Results r={results} d={d} />}
           {step === 4 && !isAuth && <LockedGate onPurchase={() => setShowPay(true)} onLogin={handleLogin} />}
 
           {step < 4 && (
@@ -808,4 +772,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
+
 
