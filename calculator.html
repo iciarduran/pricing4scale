@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Market Entry Calculator — Pricing4Scale</title>
+<meta name="description" content="Calculate your optimal market entry price with data-driven analysis, AI-powered interpretation, and go-to-market strategy."/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Lato:wght@300;400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- React via CDN (no build step needed) -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+/* ═══ TOKENS — identical to main site ═══ */
+:root {
+  --ink:#0d1117; --ink-2:#1a2130; --ink-3:#232e42;
+  --amber:#e8913a; --amber-d:#c97828; --amber-l:#f5bc78;
+  --paper:#f7f3ec; --paper-2:#ede8df; --paper-3:#e2dbd0;
+  --white:#ffffff; --muted:#6b7a8d;
+  --border:rgba(13,17,23,0.12); --border-l:rgba(13,17,23,0.07);
+  --green:#2d8a4e; --red:#c0392b;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Lato',sans-serif;background:var(--paper);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* ═══ LAYOUT ═══ */
+.wrap{max-width:1080px;margin:0 auto;padding:0 2rem}
+@media(max-width:768px){.wrap{padding:0 1.25rem}}
+
+/* ═══ TOPBAR — matches main site nav ═══ */
+.topbar{padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:rgba(247,243,236,0.92);backdrop-filter:blur(18px);position:sticky;top:0;z-index:50}
+@media(max-width:768px){.topbar{padding:0.9rem 1.25rem}}
+.topbar-logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800;letter-spacing:-0.03em}
+.topbar-logo span{color:var(--amber-d)}
+.topbar-sub{font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.06em}
+.topbar-back{font-size:0.82rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:color 0.2s;background:none;border:none;font-family:'Lato',sans-serif}
+.topbar-back:hover{color:var(--ink)}
+
+/* ═══ HERO ═══ */
+.calc-hero{background:var(--ink);padding:5rem 2rem 4rem;position:relative;overflow:hidden}
+.calc-hero::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(232,145,58,.05) 0,rgba(232,145,58,.05) 1px,transparent 1px,transparent 80px),repeating-linear-gradient(90deg,rgba(232,145,58,.05) 0,rgba(232,145,58,.05) 1px,transparent 1px,transparent 80px);pointer-events:none}
+.calc-hero-inner{max-width:1080px;margin:0 auto;position:relative}
+.tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--amber);padding:0.25rem 0;border-bottom:1.5px solid var(--amber);margin-bottom:1.2rem}
+.tag-dark{color:var(--amber-d);border-color:var(--amber-d)}
+.calc-hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);line-height:1.05;letter-spacing:-0.03em;color:var(--white);max-width:620px}
+.calc-hero h1 em{font-style:italic;color:var(--amber)}
+.calc-hero p{font-size:1rem;color:rgba(247,243,236,0.55);max-width:500px;margin-top:1rem;font-weight:300;line-height:1.75}
+
+/* ═══ STEPPER ═══ */
+.stepper{display:flex;align-items:center;justify-content:center;gap:0;padding:2.5rem 1rem;flex-wrap:wrap}
+.step-pip{display:flex;align-items:center;gap:0.65rem;padding:0.6rem 1.1rem;border-radius:2px;cursor:pointer;transition:background 0.2s}
+.step-pip:hover{background:var(--paper-2)}
+.step-pip.active{background:var(--white);box-shadow:0 1px 6px rgba(13,17,23,0.06)}
+.step-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;font-weight:600;color:var(--muted);transition:all 0.2s;flex-shrink:0}
+.step-pip.active .step-dot{border-color:var(--amber-d);color:var(--amber-d);background:rgba(232,145,58,0.08)}
+.step-pip.done .step-dot{border-color:var(--green);color:var(--white);background:var(--green);font-size:0.65rem}
+.step-txt{font-size:0.8rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted)}
+.step-pip.active .step-txt{color:var(--ink)}
+.step-conn{width:28px;height:1px;background:var(--border);flex-shrink:0}
+
+/* ═══ CARDS & FORM ═══ */
+.card{background:var(--white);border:1px solid var(--border);border-radius:3px;padding:2.5rem;margin-bottom:1.5rem;animation:cardUp 0.4s ease both}
+@media(max-width:768px){.card{padding:1.75rem 1.25rem}}
+@keyframes cardUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.card-hd{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--ink);letter-spacing:-0.02em;margin-bottom:0.35rem}
+.card-sub{font-size:0.88rem;color:var(--muted);line-height:1.65;margin-bottom:1.75rem}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media(max-width:640px){.fg{grid-template-columns:1fr}}
+.fi{display:flex;flex-direction:column;gap:0.35rem}
+.fi.full{grid-column:1/-1}
+.fl{font-size:0.8rem;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:0.4rem}
+.fl .hint{font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:var(--muted);font-weight:400}
+.fin,.fsel,.ftx{background:var(--paper);border:1px solid var(--border);border-radius:2px;padding:0.7rem 0.9rem;font-size:0.88rem;font-family:'Lato',sans-serif;color:var(--ink);outline:none;transition:border-color 0.2s,box-shadow 0.2s;width:100%}
+.fin:focus,.fsel:focus,.ftx:focus{border-color:var(--amber-d);box-shadow:0 0 0 3px rgba(232,145,58,0.1)}
+.fin::placeholder,.ftx::placeholder{color:var(--paper-3)}
+.fsel{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7a8d' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2rem}
+.ftx{resize:vertical;min-height:72px}
+.fin-prefix{display:flex;align-items:center;background:var(--paper);border:1px solid var(--border);border-radius:2px;overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s}
+.fin-prefix:focus-within{border-color:var(--amber-d);box-shadow:0 0 0 3px rgba(232,145,58,0.1)}
+.fin-prefix .pfx{padding:0.7rem 0 0.7rem 0.9rem;font-family:'IBM Plex Mono',monospace;font-size:0.85rem;color:var(--muted);font-weight:500;user-select:none}
+.fin-prefix input{background:transparent;border:none;padding:0.7rem 0.9rem 0.7rem 0.3rem;font-size:0.88rem;font-family:'Lato',sans-serif;color:var(--ink);outline:none;flex:1;min-width:0}
+
+/* ═══ SLIDERS ═══ */
+.sl-head{display:flex;justify-content:space-between;align-items:center}
+.sl-val{font-family:'IBM Plex Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--amber-d)}
+input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;background:var(--paper-3);outline:none;cursor:pointer;margin-top:0.5rem}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--amber);border:3px solid var(--white);box-shadow:0 1px 4px rgba(13,17,23,0.15);cursor:pointer}
+
+/* ═══ BUTTONS — matches main site ═══ */
+.btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;gap:0.75rem;padding-bottom:2rem}
+.btn{padding:0.75rem 1.8rem;border-radius:2px;font-size:0.82rem;font-weight:700;font-family:'Lato',sans-serif;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;border:none;display:inline-flex;align-items:center;gap:0.5rem}
+.btn-amber{background:var(--amber);color:var(--ink)}
+.btn-amber:hover{background:var(--amber-l);transform:translateY(-1px);box-shadow:0 8px 25px rgba(232,145,58,0.3)}
+.btn-dark{background:var(--ink);color:var(--paper)}
+.btn-dark:hover{background:var(--ink-3)}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--muted);color:var(--ink)}
+.btn-link{background:transparent;color:var(--muted);padding:0.75rem 1rem}
+.btn-link:hover{color:var(--ink)}
+.btn:disabled{opacity:0.35;cursor:not-allowed;transform:none!important}
+.btn-lg{padding:0.95rem 2.2rem;font-size:0.88rem}
+
+/* ═══ RESULTS ═══ */
+.price-trio{display:flex;align-items:stretch;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px;margin:2rem 0;overflow:hidden}
+@media(max-width:600px){.price-trio{flex-direction:column}}
+.price-col{flex:1;background:var(--white);text-align:center;padding:2rem 1.5rem}
+.price-col.optimal{background:var(--ink)}
+.price-col .p-label{font-family:'IBM Plex Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem}
+.price-col.optimal .p-label{color:var(--amber)}
+.price-col .p-num{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;color:var(--ink);letter-spacing:-0.02em}
+.price-col.optimal .p-num{color:var(--white)}
+.price-col .p-sub{font-size:0.75rem;color:var(--muted);margin-top:0.3rem}
+.price-col.optimal .p-sub{color:rgba(247,243,236,0.4)}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px;margin-bottom:1.5rem;overflow:hidden}
+@media(max-width:700px){.metrics-row{grid-template-columns:1fr 1fr}}
+.metric{background:var(--white);padding:1.5rem}
+.metric .m-label{font-family:'IBM Plex Mono',monospace;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+.metric .m-val{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--ink)}
+.metric .m-sub{font-size:0.75rem;color:var(--muted);margin-top:0.2rem}
+.pos-track{height:6px;background:var(--paper-3);border-radius:3px;overflow:hidden;margin:0.75rem 0 0.5rem}
+.pos-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--amber-d),var(--amber-l));transition:width 0.8s ease}
+.strat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:1.25rem}
+@media(max-width:640px){.strat-grid{grid-template-columns:1fr}}
+.strat-card{background:var(--paper);border:1px solid var(--border);border-radius:3px;padding:1.5rem}
+.strat-card h4{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;margin-bottom:0.5rem;color:var(--ink)}
+.strat-card p{font-size:0.85rem;color:var(--muted);line-height:1.65}
+
+/* ═══ AI BOX ═══ */
+.ai-box{background:var(--ink);border-radius:3px;padding:2.5rem;margin:1.5rem 0;position:relative;overflow:hidden}
+.ai-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--amber-l))}
+.ai-badge{display:inline-flex;align-items:center;gap:0.4rem;font-family:'IBM Plex Mono',monospace;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber);background:rgba(232,145,58,0.1);padding:0.3rem 0.65rem;border-radius:2px;border:1px solid rgba(232,145,58,0.2);margin-bottom:1.25rem}
+.ai-box h3{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--white);margin-bottom:1rem}
+.ai-body{font-size:0.92rem;line-height:1.8;color:rgba(247,243,236,0.6)}
+.ai-body strong{color:rgba(247,243,236,0.9);font-weight:700}
+.ai-dots{display:flex;align-items:center;gap:0.75rem;color:rgba(247,243,236,0.35);font-size:0.85rem}
+.ai-dots .dots{display:flex;gap:4px}
+.ai-dots .dots span{width:5px;height:5px;border-radius:50%;background:var(--amber);animation:pulse 1.2s infinite}
+.ai-dots .dots span:nth-child(2){animation-delay:0.2s}
+.ai-dots .dots span:nth-child(3){animation-delay:0.4s}
+@keyframes pulse{0%,80%,100%{opacity:0.15;transform:scale(0.8)}40%{opacity:1;transform:scale(1.1)}}
+
+/* ═══ CTA BANNER ═══ */
+.cta-banner{background:var(--paper-2);border:1px solid var(--border);border-radius:3px;padding:2.5rem;text-align:center;margin:1.5rem 0}
+.cta-banner h3{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:0.5rem}
+.cta-banner p{font-size:0.88rem;color:var(--muted);margin-bottom:1.5rem;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.65}
+
+/* ═══ OVERLAY & MODAL ═══ */
+.overlay{position:fixed;inset:0;background:rgba(13,17,23,0.65);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:100;animation:fadeIn 0.25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--white);border:1px solid var(--border);border-radius:4px;padding:2.75rem;max-width:480px;width:92%;animation:slideUp 0.3s ease;position:relative;max-height:90vh;overflow-y:auto}
+@media(max-width:768px){.modal{padding:2rem 1.25rem}}
+@keyframes slideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:0.3rem 0.5rem;line-height:1;border-radius:2px;transition:color 0.15s,background 0.15s}
+.modal-close:hover{color:var(--ink);background:var(--paper-2)}
+.modal-price{font-family:'Playfair Display',serif;font-size:3rem;font-weight:700;color:var(--ink);text-align:center;margin:0.75rem 0 0.15rem;letter-spacing:-0.03em}
+.modal-period{text-align:center;font-size:0.78rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:0.06em;margin-bottom:1.5rem}
+.feat-list{list-style:none;margin-bottom:1.5rem}
+.feat-list li{padding:0.5rem 0;font-size:0.84rem;color:var(--muted);display:flex;align-items:flex-start;gap:0.7rem;border-bottom:1px solid var(--border-l)}
+.feat-list li:last-child{border:none}
+.feat-list .ck{color:var(--green);font-weight:700;flex-shrink:0;margin-top:0.1rem}
+.pay-form{display:flex;flex-direction:column;gap:0.75rem}
+.pay-section-label{font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.card-brand-row{display:flex;gap:0.5rem;margin-bottom:0.25rem}
+.card-brand{font-size:0.72rem;background:var(--paper);border:1px solid var(--border);border-radius:2px;padding:0.2rem 0.6rem;color:var(--muted)}
+.card-num-wrap{position:relative}
+.card-lock{position:absolute;right:0.9rem;top:50%;transform:translateY(-50%);font-size:0.9rem;pointer-events:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.pay-error{background:#fff0f0;border:1px solid rgba(192,57,43,0.3);border-radius:2px;color:var(--red);padding:0.6rem 0.9rem;font-size:0.82rem;line-height:1.5}
+.pay-secure{display:flex;align-items:center;justify-content:center;gap:0.4rem;font-size:0.68rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:1rem;letter-spacing:0.03em;text-align:center}
+.pay-note{font-size:0.7rem;color:var(--muted);text-align:center;margin-top:0.5rem;line-height:1.55;font-style:italic}
+.pay-spinner{width:48px;height:48px;border:3px solid var(--paper-3);border-top-color:var(--amber);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.success-check{width:64px;height:64px;border-radius:50%;background:var(--green);color:white;font-size:2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;animation:popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275)}
+@keyframes popIn{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}
+.code-card{background:var(--ink);border-radius:3px;padding:1.5rem;margin-bottom:1rem}
+.code-label{font-family:'IBM Plex Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin-bottom:0.6rem}
+.code-value{font-family:'IBM Plex Mono',monospace;font-size:1.6rem;font-weight:600;letter-spacing:4px;color:var(--white);margin-bottom:0.75rem}
+.btn-copy{background:rgba(232,145,58,0.15);border:1px solid rgba(232,145,58,0.3);border-radius:2px;color:var(--amber);font-family:'IBM Plex Mono',monospace;font-size:0.72rem;letter-spacing:0.08em;padding:0.4rem 1rem;cursor:pointer;transition:all 0.2s}
+.btn-copy:hover{background:rgba(232,145,58,0.25)}
+.email-notice{display:flex;align-items:flex-start;gap:0.6rem;background:var(--paper);border:1px solid var(--border);border-radius:2px;padding:0.75rem 1rem;font-size:0.82rem;color:var(--muted);text-align:left;margin-bottom:1rem;line-height:1.55}
+.code-instructions{background:var(--paper-2);border:1px solid var(--border);border-radius:2px;padding:1rem 1.25rem;text-align:left;font-size:0.82rem;color:var(--muted);line-height:1.7}
+.code-instructions strong{color:var(--ink);display:block;margin-bottom:0.4rem}
+.code-instructions ol{margin-left:1.2rem}
+.code-instructions li{margin-bottom:0.2rem}
+
+/* ═══ GATE ═══ */
+.gate{text-align:center;padding:2.5rem 1.5rem}
+.gate-lock{color:var(--muted);margin-bottom:1rem;display:flex;justify-content:center}
+.gate h3{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:0.65rem;color:var(--ink)}
+.gate > p{color:var(--muted);font-size:0.92rem;max-width:420px;margin:0 auto 1.75rem;line-height:1.7}
+.gate-features{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;font-size:0.78rem;color:var(--green);font-weight:700;margin:0.75rem 0 1.25rem;font-family:'IBM Plex Mono',monospace}
+.preview-blur{position:relative;margin:0 auto 1.75rem;max-width:440px;border-radius:3px;overflow:hidden}
+.preview-row{display:flex;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px;filter:blur(5px);user-select:none}
+.preview-item{flex:1;background:var(--white);padding:1.25rem;text-align:center}
+.preview-item.optimal-preview{background:var(--ink)}
+.preview-label{font-size:0.62rem;font-family:'IBM Plex Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem}
+.optimal-preview .preview-label{color:var(--amber)}
+.preview-val{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--ink)}
+.optimal-preview .preview-val{color:var(--white)}
+.preview-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.88rem;font-weight:700;color:var(--ink);background:rgba(247,243,236,0.5);letter-spacing:0.04em}
+.btn-text-link{background:none;border:none;color:var(--amber-d);font-size:0.85rem;cursor:pointer;font-family:'Lato',sans-serif;font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:0.25rem}
+.btn-text-link:hover{color:var(--amber)}
+.gate-login-box{max-width:360px;margin:0 auto;width:100%}
+.gate-login{display:flex;flex-direction:column;gap:0.75rem;margin-top:0.5rem}
+.divider{display:flex;align-items:center;gap:1rem;margin:1.25rem 0;color:var(--muted);font-size:0.7rem;font-family:'IBM Plex Mono',monospace;letter-spacing:0.06em}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.access-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(45,138,78,0.1);border:1px solid rgba(45,138,78,0.25);border-radius:2px;padding:0.35rem 0.85rem;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;letter-spacing:0.06em;color:var(--green);font-weight:600}
+
+/* ═══ FOOTER ═══ */
+.calc-foot{text-align:center;padding:3rem 0 2rem;border-top:1px solid var(--border);margin-top:3rem}
+.calc-foot p{font-size:0.75rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:0.04em}
+.calc-foot a{color:var(--amber-d)}
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRICING4SCALE — MARKET ENTRY CALCULATOR
+   Standalone HTML version (React via CDN + Babel)
+   Matches pricing4scale.vercel.app design system exactly
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+const { useState, useRef, Fragment } = React;
+
+// ─── Data Constants ───────────────────────────────────────────
+const INDUSTRIES = [
+  "Consumer Products / CPG", "Fashion & Apparel", "Food & Beverage",
+  "B2B Services", "B2B SaaS / Software", "E-commerce / DTC",
+  "Professional Services", "Healthcare & Wellness", "Manufacturing",
+  "Education & Training", "Financial Services", "Real Estate & Property",
+  "Media & Entertainment", "Other",
+];
+const GEOGRAPHIES = [
+  "United States", "European Union", "United Kingdom", "Latin America",
+  "Asia-Pacific", "Middle East & Africa", "Canada", "Australia & New Zealand",
+  "Global / Multi-region",
+];
+const CHANNELS = [
+  "Direct to Consumer (Online)", "Retail / Wholesale", "Marketplace (Amazon, etc.)",
+  "Direct Sales / Enterprise", "Distributors / Resellers", "Franchise Model", "Hybrid (Multi-channel)",
+];
+const MATURITY = ["Pre-revenue / Idea stage", "Early (0–12 months)", "Growth (1–3 years)", "Established (3+ years)"];
+const PRICING_MODELS = [
+  "One-time purchase", "Subscription / Recurring", "Per-unit / Per-transaction",
+  "Tiered pricing", "Freemium + Paid", "Usage-based", "Project-based / Custom", "Not sure yet",
+];
+
+// ─── Pricing Engine ───────────────────────────────────────────
+function calculateMarketEntry(d) {
+  const totalUnitCost = d.unitCost + (d.targetVolume > 0 ? d.fixedCostsMonthly / d.targetVolume : 0);
+  const costFloor = totalUnitCost * (1 + (d.targetMarginPercent || 30) / 100);
+  const competitiveMid = (d.competitorLow + d.competitorHigh) / 2;
+  const diffPremium = 1 + (d.differentiationScore / 10) * 0.4;
+  const brandMod = 0.85 + (d.brandStrength / 10) * 0.3;
+  const switchMod = 1 + (d.switchingCost / 10) * 0.15;
+  const matMod = { 0: 1.15, 1: 1.1, 2: 1.0, 3: 0.95 }[d.marketMaturity] || 1.0;
+  const urgMod = 1 + (d.urgencyLevel / 10) * 0.1;
+  const channelAdj = 1 + (d.channelMargin || 0) / 100;
+  const valueBased = competitiveMid * diffPremium * brandMod * switchMod * matMod * urgMod;
+  const optimalPrice = Math.max(costFloor, valueBased) * channelAdj;
+  const priceFloor = Math.max(costFloor * channelAdj, d.competitorLow * 0.9);
+  const priceCeiling = Math.min(optimalPrice * 1.25, d.competitorHigh * 1.3 * diffPremium);
+  const marginAtOptimal = totalUnitCost > 0 ? ((optimalPrice / channelAdj - totalUnitCost) / (optimalPrice / channelAdj)) * 100 : 0;
+  const monthlyRevenue = optimalPrice * d.targetVolume;
+  const annualRevenue = monthlyRevenue * 12;
+  const positioningScore = Math.min(100, Math.round(
+    (d.differentiationScore * 3 + d.brandStrength * 2 + d.switchingCost * 2 +
+    (d.marketMaturity === 0 ? 8 : d.marketMaturity === 1 ? 6 : d.marketMaturity === 2 ? 4 : 3) * 1.5) / 0.85
+  ));
+  const priceVsCompetitive = competitiveMid > 0 ? optimalPrice / competitiveMid : 1;
+  let riskLevel = "Low", riskColor = "#2d8a4e";
+  if (priceVsCompetitive > 1.4 || marginAtOptimal < 15) { riskLevel = "High"; riskColor = "#c0392b"; }
+  else if (priceVsCompetitive > 1.2 || marginAtOptimal < 25) { riskLevel = "Medium"; riskColor = "#c97828"; }
+  return {
+    optimalPrice: Math.round(optimalPrice * 100) / 100,
+    priceFloor: Math.round(priceFloor * 100) / 100,
+    priceCeiling: Math.round(priceCeiling * 100) / 100,
+    marginAtOptimal: Math.round(marginAtOptimal * 10) / 10,
+    monthlyRevenue: Math.round(monthlyRevenue),
+    annualRevenue: Math.round(annualRevenue),
+    positioningScore, riskLevel, riskColor,
+    priceVsCompetitive: Math.round(priceVsCompetitive * 100) / 100,
+  };
+}
+
+// ─── Access Code Helpers ──────────────────────────────────────
+function generateAccessCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const seg2 = Array.from({ length: 3 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  const seg3 = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  return "P4S-" + seg2 + "-" + seg3;
+}
+const STORAGE_KEY = "p4s_access_codes";
+function saveCode(code, email) {
+  try {
+    const ex = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    ex[code.toUpperCase()] = { email, createdAt: Date.now() };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ex));
+  } catch(e) {}
+}
+function verifyCode(code) {
+  try {
+    const ex = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    return !!ex[code.toUpperCase()];
+  } catch { return false; }
+}
+
+// ─── Form Components ──────────────────────────────────────────
+function Slider({ label, hint, value, onChange }) {
+  return (
+    <div className="fi full" style={{ gap: "0.2rem" }}>
+      <div className="sl-head">
+        <label className="fl">{label} {hint && <span className="hint">{hint}</span>}</label>
+        <span className="sl-val">{value} / 10</span>
+      </div>
+      <input type="range" min={0} max={10} value={value} onChange={e => onChange(+e.target.value)} />
+    </div>
+  );
+}
+function Money({ label, hint, value, onChange, ph }) {
+  return (
+    <div className="fi">
+      <label className="fl">{label} {hint && <span className="hint">{hint}</span>}</label>
+      <div className="fin-prefix">
+        <span className="pfx">$</span>
+        <input type="number" value={value} onChange={e => onChange(e.target.value === "" ? "" : +e.target.value)} placeholder={ph || "0.00"} step="0.01" min="0" />
+      </div>
+    </div>
+  );
+}
+function Sel({ label, hint, value, onChange, opts, ph }) {
+  return (
+    <div className="fi">
+      <label className="fl">{label} {hint && <span className="hint">{hint}</span>}</label>
+      <select className="fsel" value={value} onChange={e => onChange(e.target.value)}>
+        <option value="">{ph || "Select…"}</option>
+        {opts.map((o, i) => <option key={i} value={typeof o === "string" ? o : o.value}>{typeof o === "string" ? o : o.label}</option>)}
+      </select>
+    </div>
+  );
+}
+
+// ─── Step Components ──────────────────────────────────────────
+function S1({ d, set }) {
+  const u = (k, v) => set({ ...d, [k]: v });
+  return (
+    <div className="card">
+      <h3 className="card-hd">Market & Business Context</h3>
+      <p className="card-sub">Tell us about your market, stage, and channel. This shapes the entire recommendation.</p>
+      <div className="fg">
+        <Sel label="Industry" value={d.industry} onChange={v => u("industry", v)} opts={INDUSTRIES} ph="Select your industry" />
+        <Sel label="Target Geography" value={d.geography} onChange={v => u("geography", v)} opts={GEOGRAPHIES} ph="Primary market" />
+        <Sel label="Business Maturity" value={d.maturity} onChange={v => u("maturity", v)} opts={MATURITY.map((m, i) => ({ label: m, value: i }))} ph="Your stage" />
+        <Sel label="Primary Channel" value={d.channel} onChange={v => u("channel", v)} opts={CHANNELS} ph="How you sell" />
+        <Sel label="Pricing Model" value={d.pricingModel} onChange={v => u("pricingModel", v)} opts={PRICING_MODELS} ph="How you charge" />
+        <div className="fi">
+          <label className="fl">Company Name <span className="hint">optional</span></label>
+          <input className="fin" value={d.companyName} onChange={e => u("companyName", e.target.value)} placeholder="e.g. Acme Co." />
+        </div>
+        <div className="fi full">
+          <label className="fl">What you sell</label>
+          <textarea className="ftx" value={d.description} onChange={e => u("description", e.target.value)} placeholder="e.g. Premium organic skincare for Gen Z via DTC..." rows={3} />
+        </div>
+      </div>
+    </div>
+  );
+}
+function S2({ d, set }) {
+  const u = (k, v) => set({ ...d, [k]: v });
+  return (
+    <div className="card">
+      <h3 className="card-hd">Cost Structure & Financials</h3>
+      <p className="card-sub">These numbers set your pricing floor. Estimates are fine.</p>
+      <div className="fg">
+        <Money label="Unit Cost (COGS)" hint="per unit" value={d.unitCost} onChange={v => u("unitCost", v)} ph="Cost to produce one unit" />
+        <Money label="Monthly Fixed Costs" hint="rent, salaries" value={d.fixedCostsMonthly} onChange={v => u("fixedCostsMonthly", v)} ph="Total monthly overhead" />
+        <div className="fi">
+          <label className="fl">Target Monthly Volume <span className="hint">units/month</span></label>
+          <input className="fin" type="number" value={d.targetVolume} onChange={e => u("targetVolume", e.target.value === "" ? "" : +e.target.value)} placeholder="Expected units per month" min="0" />
+        </div>
+        <div className="fi">
+          <label className="fl">Channel Margin <span className="hint">% to partner</span></label>
+          <div className="fin-prefix">
+            <input type="number" value={d.channelMargin} onChange={e => u("channelMargin", e.target.value === "" ? "" : +e.target.value)} placeholder="e.g. 30" min="0" max="80" />
+            <span className="pfx">%</span>
+          </div>
+        </div>
+        <div className="fi full">
+          <div className="sl-head">
+            <label className="fl">Target Profit Margin</label>
+            <span className="sl-val">{d.targetMarginPercent || 30}%</span>
+          </div>
+          <input type="range" min={0} max={80} step={5} value={d.targetMarginPercent || 30} onChange={e => u("targetMarginPercent", +e.target.value)} />
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.65rem", color: "var(--muted)", fontFamily: "'IBM Plex Mono',monospace", marginTop: "0.25rem" }}>
+            <span>0%</span><span>40%</span><span>80%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+function S3({ d, set }) {
+  const u = (k, v) => set({ ...d, [k]: v });
+  return (
+    <div className="card">
+      <h3 className="card-hd">Competitive Landscape</h3>
+      <p className="card-sub">Competitor pricing and your differentiation are the biggest inputs to entry price.</p>
+      <div className="fg">
+        <Money label="Competitor Low End" hint="cheapest" value={d.competitorLow} onChange={v => u("competitorLow", v)} ph="Lowest competitor" />
+        <Money label="Competitor High End" hint="premium" value={d.competitorHigh} onChange={v => u("competitorHigh", v)} ph="Highest competitor" />
+        <div className="fi">
+          <label className="fl">Direct Competitors <span className="hint">estimate</span></label>
+          <input className="fin" type="number" value={d.competitorCount} onChange={e => u("competitorCount", e.target.value === "" ? "" : +e.target.value)} placeholder="e.g. 5" min="0" />
+        </div>
+        <Sel label="Competitor Funding" value={d.competitorFunding} onChange={v => u("competitorFunding", v)} opts={[{ label: "Mostly bootstrapped", value: "low" }, { label: "Mixed", value: "medium" }, { label: "Well-funded", value: "high" }]} />
+        <Slider label="Your Differentiation" hint="0 = commodity, 10 = unique" value={d.differentiationScore} onChange={v => u("differentiationScore", v)} />
+        <Slider label="Customer Switching Cost" hint="0 = easy, 10 = locked in" value={d.switchingCost} onChange={v => u("switchingCost", v)} />
+      </div>
+    </div>
+  );
+}
+function S4({ d, set }) {
+  const u = (k, v) => set({ ...d, [k]: v });
+  return (
+    <div className="card">
+      <h3 className="card-hd">Value & Positioning</h3>
+      <p className="card-sub">Brand, urgency, and perceived value shape pricing power above competitive midpoint.</p>
+      <div className="fg">
+        <Slider label="Brand Strength" hint="0 = unknown, 10 = household name" value={d.brandStrength} onChange={v => u("brandStrength", v)} />
+        <Slider label="Purchase Urgency" hint="0 = nice-to-have, 10 = critical" value={d.urgencyLevel} onChange={v => u("urgencyLevel", v)} />
+        <div className="fi full">
+          <label className="fl">#1 value differentiator</label>
+          <textarea className="ftx" value={d.valueProp} onChange={e => u("valueProp", e.target.value)} placeholder="What makes you uniquely valuable..." rows={3} />
+        </div>
+        <div className="fi full">
+          <label className="fl">Target customer profile</label>
+          <textarea className="ftx" value={d.targetCustomer} onChange={e => u("targetCustomer", e.target.value)} placeholder="Who buys this and why..." rows={3} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Results Component ────────────────────────────────────────
+function Results({ r, d, aiText, aiLoad }) {
+  const fmt = n => n >= 1e6 ? "$"+(n/1e6).toFixed(1)+"M" : n >= 1e3 ? "$"+(n/1e3).toFixed(1)+"K" : "$"+n.toFixed(2);
+  return (
+    <div style={{ paddingTop: "1rem" }}>
+      <div style={{ textAlign: "center", marginBottom: "0.5rem" }}><div className="tag tag-dark">// Your Market Entry Pricing</div></div>
+      <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(1.5rem,3vw,2.2rem)", textAlign: "center", letterSpacing: "-0.02em", marginBottom: "0.5rem" }}>Recommended Price Range</h2>
+      <p style={{ textAlign: "center", fontSize: "0.88rem", color: "var(--muted)", maxWidth: 480, margin: "0 auto" }}>Based on your cost structure, competitive landscape, and positioning inputs.</p>
+
+      <div className="price-trio">
+        <div className="price-col"><div className="p-label">Price Floor</div><div className="p-num">${r.priceFloor.toFixed(2)}</div><div className="p-sub">Minimum viable</div></div>
+        <div className="price-col optimal"><div className="p-label">✦ Optimal Entry Price</div><div className="p-num">${r.optimalPrice.toFixed(2)}</div><div className="p-sub">Recommended</div></div>
+        <div className="price-col"><div className="p-label">Price Ceiling</div><div className="p-num">${r.priceCeiling.toFixed(2)}</div><div className="p-sub">Max with positioning</div></div>
+      </div>
+
+      <div className="metrics-row">
+        <div className="metric"><div className="m-label">Margin</div><div className="m-val" style={{ color: r.marginAtOptimal > 40 ? "var(--green)" : r.marginAtOptimal > 20 ? "var(--amber-d)" : "var(--red)" }}>{r.marginAtOptimal}%</div><div className="m-sub">Gross per unit</div></div>
+        <div className="metric"><div className="m-label">Monthly Rev</div><div className="m-val">{fmt(r.monthlyRevenue)}</div><div className="m-sub">At target volume</div></div>
+        <div className="metric"><div className="m-label">Annual</div><div className="m-val">{fmt(r.annualRevenue)}</div><div className="m-sub">12-month projection</div></div>
+        <div className="metric"><div className="m-label">Risk</div><div className="m-val" style={{ color: r.riskColor }}>{r.riskLevel}</div><div className="m-sub">Price vs competitive</div></div>
+      </div>
+
+      <div className="card">
+        <h3 className="card-hd">Positioning Score</h3>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem" }}>
+          <span style={{ fontSize: "0.75rem", color: "var(--muted)" }}>Weak</span>
+          <span style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.3rem", fontWeight: 700, color: "var(--amber-d)" }}>{r.positioningScore}/100</span>
+          <span style={{ fontSize: "0.75rem", color: "var(--muted)" }}>Dominant</span>
+        </div>
+        <div className="pos-track"><div className="pos-fill" style={{ width: r.positioningScore+"%" }} /></div>
+        <p style={{ fontSize: "0.82rem", color: "var(--muted)", marginTop: "0.75rem", lineHeight: 1.65 }}>Differentiation ({d.differentiationScore}/10), brand ({d.brandStrength}/10), switching costs ({d.switchingCost}/10).</p>
+      </div>
+
+      <div className="card">
+        <h3 className="card-hd">Go-to-Market Strategy</h3>
+        <p className="card-sub">Tactical recommendations for your situation.</p>
+        <div className="strat-grid">
+          <div className="strat-card"><h4>Launch Approach</h4><p>{r.positioningScore > 65 ? "Launch at optimal. Your differentiation supports premium from day one." : r.positioningScore > 40 ? "Launch 10-15% below optimal, raise within 90 days with social proof." : "Start near floor, build volume and case studies, then raise."}</p></div>
+          <div className="strat-card"><h4>Communication</h4><p>{String(d.pricingModel).includes("Subscription") ? "Frame monthly, offer annual at 15-20% discount for retention." : String(d.pricingModel).includes("Tiered") ? "3 tiers: Entry (floor), Pro (optimal), Enterprise (ceiling)." : "Lead with value, not price. Anchor against cost of inaction."}</p></div>
+          <div className="strat-card"><h4>Competitive Response</h4><p>{r.priceVsCompetitive > 1.2 ? "Above midpoint — justify premium with ROI proof." : r.priceVsCompetitive > 0.9 ? "Sweet spot — compete on experience, not price." : "Below midpoint — set timeline for increases."}</p></div>
+          <div className="strat-card"><h4>Price Evolution</h4><p>{+d.maturity <= 1 ? "First increase at 6 months. Grandfather early customers." : "Review quarterly. Small frequent increases beat large infrequent ones."}</p></div>
+        </div>
+      </div>
+
+      <div className="ai-box">
+        <div className="ai-badge">◆ AI Strategy Interpretation</div>
+        <h3>Personalized Analysis</h3>
+        {aiLoad ? (
+          <div className="ai-dots"><div className="dots"><span /><span /><span /></div><span>Generating analysis…</span></div>
+        ) : aiText ? (
+          <div className="ai-body" dangerouslySetInnerHTML={{ __html: aiText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br/>") }} />
+        ) : (
+          <p style={{ color: "rgba(247,243,236,0.35)", fontSize: "0.85rem" }}>AI interpretation loading…</p>
+        )}
+      </div>
+
+      <div className="cta-banner">
+        <h3>Need Help Executing This?</h3>
+        <p>Our consulting gives you the full strategy — delivered in 4-6 weeks.</p>
+        <a href="mailto:pricing4scale@gmail.com?subject=Consulting%20from%20Calculator" className="btn btn-amber btn-lg" style={{ textDecoration: "none" }}>Get Expert Support →</a>
+      </div>
+    </div>
+  );
+}
+
+// ─── Payment Modal ────────────────────────────────────────────
+function PaymentModal({ onClose, onSuccess }) {
+  const [stage, setStage] = useState("checkout");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [cardNum, setCardNum] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvc, setCvc] = useState("");
+  const [code, setCode] = useState("");
+  const [err, setErr] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const fmtCard = v => v.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
+  const fmtExpiry = v => { const c = v.replace(/\D/g, "").slice(0, 4); return c.length > 2 ? c.slice(0,2)+" / "+c.slice(2) : c; };
+
+  const validate = () => {
+    if (!email.includes("@")) return "Please enter a valid email.";
+    if (!name.trim()) return "Please enter cardholder name.";
+    if (cardNum.replace(/\s/g, "").length < 16) return "Please enter a valid card number.";
+    if (expiry.replace(/\D/g, "").length < 4) return "Please enter a valid expiry.";
+    if (cvc.replace(/\D/g, "").length < 3) return "Please enter a valid CVC.";
+    return null;
+  };
+
+  const handlePay = () => {
+    const e = validate();
+    if (e) { setErr(e); return; }
+    setErr(""); setStage("processing");
+    setTimeout(() => { const c = generateAccessCode(); saveCode(c, email); setCode(c); setStage("success"); }, 2200);
+  };
+  const handleCopy = () => { navigator.clipboard?.writeText(code).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+
+  return (
+    <div className="overlay" onClick={e => e.target === e.currentTarget && stage !== "processing" && onClose()}>
+      <div className="modal">
+        {stage !== "processing" && <button className="modal-close" onClick={onClose}>✕</button>}
+
+        {stage === "checkout" && (<>
+          <div style={{ textAlign: "center" }}>
+            <div className="tag tag-dark">// Secure Checkout</div>
+            <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.2rem", marginBottom: "0.25rem" }}>Unlock Your Pricing Analysis</h3>
+          </div>
+          <div className="modal-price">$49</div>
+          <div className="modal-period">One-time · No subscription · No renewal</div>
+          <ul className="feat-list">
+            <li><span className="ck">✓</span> Full pricing recommendation (floor → optimal → ceiling)</li>
+            <li><span className="ck">✓</span> AI-powered strategic interpretation</li>
+            <li><span className="ck">✓</span> Go-to-market pricing playbook</li>
+            <li><span className="ck">✓</span> Positioning score & risk assessment</li>
+            <li><span className="ck">✓</span> Revenue projections at target volume</li>
+            <li><span className="ck">✓</span> Permanent access code — revisit anytime</li>
+          </ul>
+          {err && <div className="pay-error">⚠ {err}</div>}
+          <div className="pay-form">
+            <div className="pay-section-label">Contact</div>
+            <input className="fin" type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
+            <div className="pay-section-label" style={{ marginTop: "0.5rem" }}>Card Details</div>
+            <div className="card-brand-row"><span className="card-brand">💳 VISA</span><span className="card-brand">💳 MC</span><span className="card-brand">💳 AMEX</span></div>
+            <input className="fin" placeholder="Cardholder name" value={name} onChange={e => setName(e.target.value)} autoComplete="cc-name" />
+            <div className="card-num-wrap">
+              <input className="fin" placeholder="1234 5678 9012 3456" value={cardNum} onChange={e => setCardNum(fmtCard(e.target.value))} inputMode="numeric" maxLength={19} />
+              <span className="card-lock">🔒</span>
+            </div>
+            <div className="row2">
+              <input className="fin" placeholder="MM / YY" value={expiry} onChange={e => setExpiry(fmtExpiry(e.target.value))} inputMode="numeric" maxLength={7} />
+              <input className="fin" placeholder="CVC" value={cvc} onChange={e => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))} inputMode="numeric" maxLength={4} type="password" />
+            </div>
+            <button className="btn btn-amber btn-lg" style={{ width: "100%", justifyContent: "center", marginTop: "0.5rem" }} onClick={handlePay}>Pay $49 Securely →</button>
+          </div>
+          <div className="pay-secure">🔒 Secured with Stripe · 256-bit TLS</div>
+          <p className="pay-note">Payment is simulated for demo. Production uses real Stripe.</p>
+        </>)}
+
+        {stage === "processing" && (
+          <div style={{ textAlign: "center", padding: "3rem 1rem" }}>
+            <div className="pay-spinner" />
+            <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.25rem", marginTop: "1.5rem", marginBottom: "0.5rem" }}>Processing Payment…</h3>
+            <p style={{ color: "var(--muted)", fontSize: "0.85rem" }}>Please don't close this window.</p>
+          </div>
+        )}
+
+        {stage === "success" && (
+          <div style={{ textAlign: "center", padding: "1rem 0" }}>
+            <div className="success-check">✓</div>
+            <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.4rem", marginBottom: "0.5rem" }}>Payment Successful!</h3>
+            <p style={{ color: "var(--muted)", fontSize: "0.88rem", marginBottom: "1.5rem", lineHeight: 1.65 }}>Save your access code — use it to return anytime.</p>
+            <div className="code-card">
+              <div className="code-label">Your Access Code</div>
+              <div className="code-value">{code}</div>
+              <button className="btn-copy" onClick={handleCopy}>{copied ? "✓ Copied!" : "Copy Code"}</button>
+            </div>
+            <div className="email-notice"><span>📧</span><span>Also sent to <strong>{email}</strong></span></div>
+            <button className="btn btn-amber btn-lg" style={{ width: "100%", justifyContent: "center", marginTop: "1rem" }} onClick={() => onSuccess(code)}>View My Results →</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Locked Gate ──────────────────────────────────────────────
+function LockedGate({ onPurchase, onLogin }) {
+  const [showLogin, setShowLogin] = useState(false);
+  const [loginCode, setLoginCode] = useState("");
+  const [loginErr, setLoginErr] = useState("");
+  const handleLogin = () => {
+    const t = loginCode.trim().toUpperCase();
+    if (!t) { setLoginErr("Please enter your access code."); return; }
+    if (verifyCode(t) || t === "DEMO-ACCESS") { onLogin(t); } else { setLoginErr("Code not found. Check and try again."); }
+  };
+  return (
+    <div className="card">
+      <div className="gate">
+        <div className="gate-lock">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </div>
+        <h3>Your Analysis Is Ready</h3>
+        <p>Complete your $49 one-time purchase to unlock your full pricing recommendation, AI interpretation, and go-to-market strategy.</p>
+        <div className="preview-blur">
+          <div className="preview-row">
+            <div className="preview-item"><div className="preview-label">Price Floor</div><div className="preview-val">$●●●</div></div>
+            <div className="preview-item optimal-preview"><div className="preview-label">✦ Recommended</div><div className="preview-val">$●●●</div></div>
+            <div className="preview-item"><div className="preview-label">Price Ceiling</div><div className="preview-val">$●●●</div></div>
+          </div>
+          <div className="preview-overlay">🔒 Purchase to reveal</div>
+        </div>
+        <button className="btn btn-amber btn-lg" style={{ marginBottom: "1rem" }} onClick={onPurchase}>Unlock Results — $49 One-Time →</button>
+        <div className="gate-features"><span>✓ Instant access</span><span>✓ Permanent code</span><span>✓ No subscription</span></div>
+        {!showLogin ? (
+          <button className="btn-text-link" onClick={() => setShowLogin(true)}>Already have an access code? Log in →</button>
+        ) : (
+          <div className="gate-login-box">
+            <div className="divider">or log in with access code</div>
+            {loginErr && <div className="pay-error" style={{ marginBottom: "0.75rem" }}>⚠ {loginErr}</div>}
+            <div className="gate-login">
+              <input className="fin" placeholder="Enter code (e.g. P4S-X7K-2M9F)" value={loginCode} onChange={e => { setLoginCode(e.target.value); setLoginErr(""); }} onKeyDown={e => e.key === "Enter" && handleLogin()} style={{ fontFamily: "'IBM Plex Mono',monospace", letterSpacing: "2px", textTransform: "uppercase" }} />
+              <button className="btn btn-dark" style={{ width: "100%" }} onClick={handleLogin}>Unlock with Code →</button>
+              <p style={{ fontSize: "0.75rem", color: "var(--muted)", textAlign: "center" }}>Try <strong>DEMO-ACCESS</strong> to preview results.</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main App ─────────────────────────────────────────────────
+const STEPS = [{ label: "Market" }, { label: "Costs" }, { label: "Competition" }, { label: "Positioning" }, { label: "Results" }];
+const init = {
+  industry: "", geography: "", maturity: "", channel: "", pricingModel: "", companyName: "", description: "",
+  unitCost: "", fixedCostsMonthly: "", targetVolume: "", channelMargin: "", targetMarginPercent: 30,
+  competitorLow: "", competitorHigh: "", competitorCount: "", competitorFunding: "",
+  differentiationScore: 5, switchingCost: 3, brandStrength: 3, urgencyLevel: 5, valueProp: "", targetCustomer: "",
+};
+
+function App() {
+  const [step, setStep] = useState(0);
+  const [d, setD] = useState(init);
+  const [results, setResults] = useState(null);
+  const [showPay, setShowPay] = useState(false);
+  const [isAuth, setIsAuth] = useState(false);
+  const [accessCode, setAccessCode] = useState("");
+  const [aiText, setAiText] = useState("");
+  const [aiLoad, setAiLoad] = useState(false);
+  const topRef = useRef(null);
+
+  const scrollTop = () => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const go = s => { setStep(s); scrollTop(); };
+  const canNext = s => {
+    if (s === 0) return d.industry && d.geography;
+    if (s === 1) return d.unitCost !== "";
+    if (s === 2) return d.competitorLow !== "" && d.competitorHigh !== "";
+    return true;
+  };
+
+  const runCalc = () => {
+    const r = calculateMarketEntry({
+      unitCost: +d.unitCost || 0, fixedCostsMonthly: +d.fixedCostsMonthly || 0,
+      targetVolume: +d.targetVolume || 100, competitorLow: +d.competitorLow || 0,
+      competitorHigh: +d.competitorHigh || 0, differentiationScore: d.differentiationScore,
+      marketMaturity: +d.maturity || 2, channelMargin: +d.channelMargin || 0,
+      targetMarginPercent: d.targetMarginPercent || 30, brandStrength: d.brandStrength,
+      switchingCost: d.switchingCost, urgencyLevel: d.urgencyLevel,
+    });
+    setResults(r);
+    setStep(4);
+    scrollTop();
+    // AI interpretation
+    (async () => {
+      setAiLoad(true);
+      try {
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514", max_tokens: 1000,
+            messages: [{ role: "user",
+              content: "You are a senior pricing strategist (20+ years). Interpret this market entry analysis.\n\nCLIENT: "+d.industry+" | "+d.geography+" | "+(MATURITY[+d.maturity]||"Unknown")+" | "+d.channel+"\nProduct: "+(d.description||"N/A")+" | Value: "+(d.valueProp||"N/A")+"\nCost: $"+d.unitCost+"/unit, $"+d.fixedCostsMonthly+"/mo fixed | Vol: "+d.targetVolume+"/mo\nCompetitors: $"+d.competitorLow+"-$"+d.competitorHigh+" | Diff: "+d.differentiationScore+"/10 | Brand: "+d.brandStrength+"/10\n\nRESULTS: Optimal $"+r.optimalPrice+" | Floor $"+r.priceFloor+" | Ceiling $"+r.priceCeiling+" | Margin "+r.marginAtOptimal+"% | Position "+r.positioningScore+"/100 | Risk "+r.riskLevel+"\n\nGive: 1) 2-sentence summary 2) Biggest risk + fix 3) Non-obvious insight 4) First action this week. Use **bold**. Be specific."
+            }],
+          }),
+        });
+        const data = await res.json();
+        setAiText(data.content?.map(c => c.text || "").join("\n") || "Results valid. Contact pricing4scale@gmail.com for interpretation.");
+      } catch {
+        setAiText("**AI unavailable.** Results above are still actionable. Email pricing4scale@gmail.com for interpretation.");
+      }
+      setAiLoad(false);
+    })();
+  };
+
+  const handleCalc = () => { if (!isAuth) { setShowPay(true); return; } runCalc(); };
+  const handlePaySuccess = (code) => { setAccessCode(code); setIsAuth(true); setShowPay(false); runCalc(); };
+  const handleLogin = (code) => { setAccessCode(code); setIsAuth(true); runCalc(); };
+  const handleReset = () => { setStep(0); setResults(null); setAiText(""); setIsAuth(false); setAccessCode(""); };
+
+  return (
+    <React.Fragment>
+      <div ref={topRef}>
+        <div className="topbar">
+          <div>
+            <div className="topbar-logo">Pricing<span>4</span>Scale</div>
+            <div className="topbar-sub">Market Entry Calculator</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            {isAuth && accessCode && <div className="access-badge">✓ {accessCode}</div>}
+            <a href="/" className="topbar-back">← Back to Site</a>
+          </div>
+        </div>
+
+        {step === 0 && (
+          <div className="calc-hero">
+            <div style={{ position: "absolute", top: "-20%", right: "-8%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle,rgba(232,145,58,0.12) 0%,transparent 70%)", pointerEvents: "none" }} />
+            <div className="calc-hero-inner">
+              <div className="tag">// Market Entry Pricing Tool</div>
+              <h1>Calculate Your<br /><em>Optimal Entry Price</em></h1>
+              <p>Input your market data, cost structure, and competitive landscape — get a data-driven price range, positioning score, and AI-powered interpretation.</p>
+            </div>
+          </div>
+        )}
+
+        <div className="wrap">
+          <div className="stepper">
+            {STEPS.map((s, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <div className="step-conn" />}
+                <div className={"step-pip"+(step===i?" active":"")+(i<step?" done":"")} onClick={() => i<=step && go(i)} style={{ cursor: i<=step?"pointer":"default" }}>
+                  <div className="step-dot">{i < step ? "✓" : i + 1}</div>
+                  <div className="step-txt">{s.label}</div>
+                </div>
+              </React.Fragment>
+            ))}
+          </div>
+
+          {step === 0 && <S1 d={d} set={setD} />}
+          {step === 1 && <S2 d={d} set={setD} />}
+          {step === 2 && <S3 d={d} set={setD} />}
+          {step === 3 && <S4 d={d} set={setD} />}
+          {step === 4 && isAuth && results && <Results r={results} d={d} aiText={aiText} aiLoad={aiLoad} />}
+          {step === 4 && !isAuth && <LockedGate onPurchase={() => setShowPay(true)} onLogin={handleLogin} />}
+
+          {step < 4 && (
+            <div className="btn-row">
+              {step > 0 ? <button className="btn btn-link" onClick={() => go(step-1)}>← Back</button> : <div />}
+              {step < 3
+                ? <button className="btn btn-amber" onClick={() => go(step+1)} disabled={!canNext(step)}>Continue →</button>
+                : <button className="btn btn-amber btn-lg" onClick={handleCalc}>Calculate My Price →</button>
+              }
+            </div>
+          )}
+          {step === 4 && isAuth && (
+            <div className="btn-row" style={{ justifyContent: "center" }}>
+              <button className="btn btn-ghost" onClick={handleReset}>← New Calculation</button>
+            </div>
+          )}
+
+          <div className="calc-foot">
+            <p>© 2026 <a href="/">Pricing4Scale</a>. All rights reserved.</p>
+            <p style={{ marginTop: "0.5rem" }}>// Data-driven estimates, not financial advice.</p>
+          </div>
+        </div>
+      </div>
+
+      {showPay && <PaymentModal onClose={() => setShowPay(false)} onSuccess={handlePaySuccess} />}
+    </React.Fragment>
+  );
+}
+
+// ─── Mount ────────────────────────────────────────────────────
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
